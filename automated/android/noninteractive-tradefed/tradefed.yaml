@@ -1,7 +1,10 @@
 metadata:
     name: cts
     format: "Lava-Test Test Definition 1.0"
-    description: "Run tradefed based tests in LAVA."
+    description: "Run tradefed based tests in LAVA.
+                  If there are multiple android devices connected to
+                  the host, please export the android serial number via the
+                  ANDROID_SERIAL environment variable before running the scripts"
     maintainer:
         - milosz.wasilewski@linaro.org
         - chase.qi@linaro.org
@@ -53,7 +56,7 @@ run:
         - chown testuser:testuser .
         - if echo "${TEST_REBOOT_EXPECTED}" |grep -i "true" ; then ./monitor_fastboot.sh & fi
         - ./monitor_adb.sh &
-        - sudo -u testuser ./tradefed.sh  -o "${TIMEOUT}" -c "${TEST_URL}" -t "${TEST_PARAMS}" -p "${TEST_PATH}" -r "${RESULTS_FORMAT}" -n "${ANDROID_SERIAL}" -f "${FAILURES_PRINTED}" -a "${AP_SSID}" -k "${AP_KEY}" || true
+        - sudo -u testuser ./tradefed.sh  -o "${TIMEOUT}" -c "${TEST_URL}" -t "${TEST_PARAMS}" -p "${TEST_PATH}" -r "${RESULTS_FORMAT}" -f "${FAILURES_PRINTED}" -a "${AP_SSID}" -k "${AP_KEY}" || true
         # Upload test log and result files to artifactorial.
         - cp -r ./${TEST_PATH}/results ./output/ || true
         - cp -r ./${TEST_PATH}/logs ./output/ || true
@@ -67,6 +70,7 @@ run:
         - ../../utils/send-to-lava.sh ./output/result.txt
         - userdel testuser -f -r || true
         # When adb device lost, end test job to mark it as 'incomplete'.
+        # ANDROID_SERIAL was exported by the setup.sh
         - if ! adb shell echo ok; then ./debug-fastboot.sh; error_fatal "tradefed - adb device lost[$ANDROID_SERIAL]"; fi
         - if echo "${TEST_REBOOT_EXPECTED}" |grep -i "true" ; then killall monitor_fastboot.sh; fi
         - killall monitor_adb.sh
