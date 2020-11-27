@@ -37,7 +37,7 @@ if [ "${num_fastboot_devices}" -ne 1 ]; then
     echo "BOOT_AGAIN_AFTER_REBOOT fail" > ${OUTPUT}/boot_result.txt
     echo  "No fastboot devices listed"
 else
-    ls -l /dev/bus/usb/*/*
+    [ -f ./debug-fastboot.sh ] && ./debug-fastboot.sh
     timeout 60 fastboot boot /lava-lxc/*boot*.img
     timeout 300 adb wait-for-device
     lsusb -v |tee output/lsusb-v-after-booted.txt

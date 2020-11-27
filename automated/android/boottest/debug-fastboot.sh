@@ -38,6 +38,7 @@ echo "----list usb devices owner and group end----"
 fastboot_devices=$(echo ${fastboot_devices})
 if [ -n "${fastboot_devices}" ]; then
     for device in ${fastboot_devices}; do
+        echo "regenerate uevent for ${device}"
         echo add |tee ${device}/uevent
         # /sys/bus/usb/drivers/usb/bind and /sys/bus/usb/drivers/usb/unbind
     done
