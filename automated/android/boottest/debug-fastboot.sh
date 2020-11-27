@@ -52,6 +52,7 @@ if [ "$(id -ru)" -eq 0 ]; then
         for devpath in ${devpaths}; do
             echo "chown group for ${devpath}"
             chown :plugdev ${devpath}
+            chmod 664 ${devpath}
         done
     fi
     echo "----list usb devices owner and group after chown group to plugdev start----"

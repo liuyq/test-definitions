@@ -25,6 +25,7 @@ wait_boot_completed "${BOOT_TIMEOUT}"
 lsusb -v > output/lsusb-v-before-adb-root.txt
 adb_root
 lsusb -v > output/lsusb-v-before-reboot.txt
+ls -l /dev/bus/usb/*/*
 adb shell "echo u > /proc/sysrq-trigger"
 adb shell "echo b > /proc/sysrq-trigger"
 echo "BOOT_REBOOT pass" > ${OUTPUT}/boot_result.txt
