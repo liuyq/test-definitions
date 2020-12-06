@@ -39,9 +39,10 @@ while getopts ':o:c:t:p:r:f:a:k:' opt; do
     esac
 done
 
-adb kill-server
-initialize_adb
-adb_root
+if [ -e "/home/testuser" ]; then
+    export HOME=/home/testuser
+fi
+
 wait_boot_completed "${TIMEOUT}"
 disable_suspend
 # wait_homescreen() searches logcat output for

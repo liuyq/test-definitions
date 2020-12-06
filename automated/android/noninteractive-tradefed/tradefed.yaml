@@ -55,11 +55,9 @@ run:
         - useradd -m testuser && echo "testuser created successfully"
         - chown testuser:testuser .
         - if echo "${TEST_REBOOT_EXPECTED}" |grep -i "true" ; then ./monitor_fastboot.sh & fi
+        - ./monitor_adb.sh &
         - sudo -u testuser ./tradefed.sh  -o "${TIMEOUT}" -c "${TEST_URL}" -t "${TEST_PARAMS}" -p "${TEST_PATH}" -r "${RESULTS_FORMAT}" -f "${FAILURES_PRINTED}" -a "${AP_SSID}" -k "${AP_KEY}" || true
         # Upload test log and result files to artifactorial.
-        - mkdir -p ./output
-        - sudo -u testuser lsusb -v > ./output/lsusb-with-testuser.txt
-        - lsusb -v > ./output/lsusb-with-normal-user.txt
         - cp -r ./${TEST_PATH}/results ./output/ || true
         - cp -r ./${TEST_PATH}/logs ./output/ || true
         # Include logs dumped from TF shell 'd l' command.
@@ -71,5 +69,7 @@ run:
         - ../../utils/send-to-lava.sh ./output/result.txt
         - userdel testuser -f -r || true
         # When adb device lost, end test job to mark it as 'incomplete'.
-        - if ! adb shell echo ok; then lsusb -v; adb devices; fastboot devices; error_fatal "tradefed - adb device lost"; fi
+        # ANDROID_SERIAL was exported by the setup.sh
+        - if ! adb shell echo ok; then ../boottest/debug-fastboot.sh; error_fatal "tradefed - adb device lost[$ANDROID_SERIAL]"; fi
         - if echo "${TEST_REBOOT_EXPECTED}" |grep -i "true" ; then killall monitor_fastboot.sh; fi
+        - killall monitor_adb.sh

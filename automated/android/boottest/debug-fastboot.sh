@@ -5,8 +5,8 @@ id
 echo "----fastboot devices list from /sys/bus/usb/devices start----"
 fastboot_devices=""
 devpaths=""
-#ls /sys/bus/usb/devices/*/serial | while read -r device; do
-ls /sys/bus/usb/drivers/usb/*/serial | while read -r device; do
+#ls /sys/bus/usb/drivers/usb/*/serial | while read -r device; do
+ls /sys/bus/usb/devices/*/serial | while read -r device; do
     basedir=$(dirname ${device})
     realpath_basedir=$(realpath ${basedir})
     basedir_name=$(basename ${basedir})
@@ -15,11 +15,12 @@ ls /sys/bus/usb/drivers/usb/*/serial | while read -r device; do
         bInterfaceClass=$(cat ${interface}/bInterfaceClass)
         bInterfaceSubClass=$(cat ${interface}/bInterfaceSubClass)
         bInterfaceProtocol=$(cat ${interface}/bInterfaceProtocol)
-        devnum=$(cat ${interface}/devnum)
-        busnum=$(cat ${interface}/busnum)
         if [ "X${bInterfaceClass}" = "Xff" ] && \
-            [ "X${bInterfaceSubClass}" = "X42" ] && \
-            [ "X${bInterfaceProtocol}" = "X03" ]; then
+                [ "X${bInterfaceSubClass}" = "X42" ] && \
+                [ "X${bInterfaceProtocol}" = "X03" ]; then
+
+            devnum=$(cat ${interface}/devnum)
+            busnum=$(cat ${interface}/busnum)
             serial=$(cat ${device})
             if [ ! -f ${interface}/interface ]; then
                 echo "${serial} no-interface-fastboot ${device}"
@@ -48,15 +49,17 @@ echo "----list usb devices owner and group end----"
 if [ "$(id -ru)" -eq 0 ]; then
     ## chown the group to plugdev for fastboot devices
     devpaths=$(echo ${devpaths})
-    if [ -n "${devpaths}" ]
+    if [ -n "${devpaths}" ]; then
         for devpath in ${devpaths}; do
             echo "chown group for ${devpath}"
             chown :plugdev ${devpath}
             chmod 664 ${devpath}
         done
+    else
+        echo "No fastboot devices found"
     fi
     echo "----list usb devices owner and group after chown group to plugdev start----"
-        ls -l /dev/bus/usb/*/*
+    ls -l /dev/bus/usb/*/*
     echo "----list usb devices owner and group after chown group to plugdev end----"
 
     # try to regenerate the uevent for fastboot devices
