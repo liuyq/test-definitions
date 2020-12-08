@@ -1,7 +1,7 @@
 #!/bin/sh -x
-while true;
-do
+while true; do
     date
-    fastboot boot /lava-lxc/*boot*.img
+    echo "Run fastboot continue to wait and reboot the device again"
+    fastboot continue
     sleep 30
 done
