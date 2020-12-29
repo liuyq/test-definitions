@@ -2,7 +2,6 @@
 while true;
 do
     date
-    lsusb
-    adb devices
+    adb shell ifconfig
     sleep 30
 done
