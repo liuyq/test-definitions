@@ -28,6 +28,7 @@ AP_KEY=""
 INTERNET_ACCESS="true"
 # Disable ENABLE_XTS_DYNAMIC_DOWNLOADER by default as suggested by google.
 ENABLE_XTS_DYNAMIC_DOWNLOADER=${ENABLE_XTS_DYNAMIC_DOWNLOADER:-"false"}
+USE_ATS=${USE_ATS:-"false"}
 
 check_internet_access() {
     if [ -n "${AP_SSID}" ] && [ -n "${AP_KEY}" ]; then
@@ -144,6 +145,7 @@ if [ "X${INTERNET_ACCESS}" = "Xtrue" ] || [ "X${INTERNET_ACCESS}" = "XTrue" ]; t
 fi
 
 export ENABLE_XTS_DYNAMIC_DOWNLOADER
+export USE_ATS
 # Run tradefed test.
 info_msg "About to run tradefed shell on device ${ANDROID_SERIAL}"
 ./tradefed-runner.py -t "${TEST_PARAMS}" -p "${TEST_PATH}" -r "${RESULT_FORMAT}" -f "${FAILURES_PRINTED}"
