@@ -9,11 +9,20 @@
 java_path_arch_str="amd64"
 if [ "X$(uname -m)" = "Xaarch64" ]; then
     java_path_arch_str="arm64"
+    update-binfmts --enable qemu-x86_64
+    update-binfmts --enable jar
 fi
 java_path="/usr/lib/jvm/java-11-openjdk-${java_path_arch_str}/bin/java"
-if [ -n "${ANDROID_VERSION}" ] && echo "${ANDROID_VERSION}" | grep -E -q "aosp-android14|aosp-main"; then
+if [ -n "${ANDROID_VERSION}" ] && echo "${ANDROID_VERSION}" | grep -E -q "aosp-android14|aosp-android15|aosp-main"; then
     # use openjdk-17 for Android14+ versions
     java_path="/usr/lib/jvm/java-17-openjdk-${java_path_arch_str}/bin/java"
+elif [ -n "${ANDROID_VERSION}" ] && echo "${ANDROID_VERSION}" | grep -E -q "aosp-android16|aosp-latest"; then
+    # use openjdk-21 for Android16+ versions
+    # java_path="/usr/lib/jvm/java-21-openjdk-${java_path_arch_str}/bin/java"
+
+    ## there is some issues for openjdk21 to work with LAA OS
+    ## Hack to use the oracle version here
+    java_path="/opt/jdk/bin/java"
 fi
 
 dist_name
